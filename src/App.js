@@ -1,32 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import './App.css';
-import abi from "./utils/WavePortal.json"
+import abi from './utils/WavePortal.json';
 
-export default function App() {
-  const [currAccount, setCurrentAccount] = React.useState("")
-
-  const contractAddress ="0x92c723748D3480505dAd661322c8F3b0f395fbbF"
+const App = () => {
+  const [currentAccount, setCurrentAccount] = useState("");
+  /**
+   * Create a varaible here that holds the contract address after you deploy!
+   */
+  const contractAddress = "0x92c723748D3480505dAd661322c8F3b0f395fbbF";
+  const contractABI = abi.abi;
   
-  const contractABI = abi.abi
-
-  const checkIfWalletIsConnected = () => {
+  const checkIfWalletIsConnected = async () => {
     try {
       const { ethereum } = window;
 
       if (!ethereum) {
-        console.log("Make sure you have metamask!")
+        console.log("Make sure you have metamask!");
         return;
       } else {
-        console.log("We have the ethereum object", ethereum)
+        console.log("We have the ethereum object", ethereum);
       }
 
-      ethereum.request({ method: 'eth_accounts' })
+      const accounts = await ethereum.request({ method: 'eth_accounts' });
 
       if (accounts.length !== 0) {
         const account = accounts[0];
-        console.log("Found an authorized account:", account)
-        setCurrentAccount(account);
+        console.log("Found an authorized account:", account);
+        setCurrentAccount(account)
       } else {
         console.log("No authorized account found")
       }
@@ -35,9 +36,24 @@ export default function App() {
     }
   }
 
-  /**
-  * Implement your connectWallet method here
-  */
+  const connectWallet = async () => {
+    try {
+      const { ethereum } = window;
+
+      if (!ethereum) {
+        alert("Get MetaMask!");
+        return;
+      }
+
+      const accounts = await ethereum.request({ method: "eth_requestAccounts" });
+
+      console.log("Connected", accounts[0]);
+      setCurrentAccount(accounts[0]); 
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const wave = async () => {
     try {
       const { ethereum } = window;
@@ -50,9 +66,6 @@ export default function App() {
         let count = await wavePortalContract.getTotalWaves();
         console.log("Retrieved total wave count...", count.toNumber());
 
-        /*
-        * Execute the actual wave from your smart contract
-        */
         const waveTxn = await wavePortalContract.wave();
         console.log("Mining...", waveTxn.hash);
 
@@ -61,7 +74,8 @@ export default function App() {
 
         count = await wavePortalContract.getTotalWaves();
         console.log("Retrieved total wave count...", count.toNumber());
-      } else {
+      } 
+      else {
         console.log("Ethereum object doesn't exist!");
       }
     } catch (error) {
@@ -76,9 +90,7 @@ export default function App() {
   return (
     <div className="mainContainer">
       <div className="dataContainer">
-        <div className="header">
-        👋 Hey there!
-        </div>
+
 
         <div className="bio">
           I am farza and I worked on self-driving cars so that's pretty cool right? Connect your Ethereum wallet and wave at me!
@@ -87,10 +99,7 @@ export default function App() {
         <button className="waveButton" onClick={wave}>
           Wave at Me
         </button>
-        
-        {/*
-        * If there is no currentAccount render this button
-        */}
+
         {!currentAccount && (
           <button className="waveButton" onClick={connectWallet}>
             Connect Wallet
@@ -101,4 +110,4 @@ export default function App() {
   );
 }
 
-//export default App
+export default App
