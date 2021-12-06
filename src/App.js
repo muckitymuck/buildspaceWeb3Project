@@ -8,7 +8,7 @@ export default function App() {
   const [currAccount, setCurrentAccount] = React.useState("")
   const [allWaves, setAllWaves] = React.useState([])
   const [tweetValue, setTweetValue] = React.useState("")
-  const contractAddress = `0x92c723748D3480505dAd661322c8F3b0f395fbbF`
+  const contractAddress = `0xEedB5f565253564785969600bA99Ce748112C368`
   const contractABI = abi.abi
 
   const checkIfWalletIsConnected = () => {
